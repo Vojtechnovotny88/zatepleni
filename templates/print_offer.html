@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulátor Zateplení Foukanou Vatou</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="zatepleni.css">
+</head>
+<body>
+    <div class="container">
+        <h2><i class="fas fa-calculator"></i> Kalkulátor Zateplení Foukanou Vatou</h2>
+
+        <!-- Sekce pro Plochu 1 -->
+        <div class="slider-container">
+            <div class="slider-label">Plocha 1 (m²): <span id="plocha1-value">0</span></div>
+            <input type="range" id="plocha1" min="0" max="200" value="0" oninput="updateRecap(); document.getElementById('plocha1-value').innerText = this.value;">
+            
+            <div class="type-container">
+                <label style="color: #FFEB3B;"><input type="radio" name="foukani1" value="volne" checked onchange="updateRecap()"> Volné foukání</label>
+                <label style="color: #FFEB3B;"><input type="radio" name="foukani1" value="dutina" onchange="updateRecap()"> Foukání do dutiny</label>
+            </div>
+        </div>
+
+        <!-- Sekce pro Plochu 2 -->
+        <div class="slider-container">
+            <div class="slider-label">Plocha 2 (m²): <span id="plocha2-value">0</span></div>
+            <input type="range" id="plocha2" min="0" max="200" value="0" oninput="updateRecap(); document.getElementById('plocha2-value').innerText = this.value;">
+            
+            <div class="type-container">
+                <label style="color: #FFEB3B;"><input type="radio" name="foukani2" value="volne" checked onchange="updateRecap()"> Volné foukání</label>
+                <label style="color: #FFEB3B;"><input type="radio" name="foukani2" value="dutina" onchange="updateRecap()"> Foukání do dutiny</label>
+            </div>
+        </div>
+
+        <!-- Sekce pro Plochu 3 -->
+        <div class="slider-container">
+            <div class="slider-label">Plocha 3 (m²): <span id="plocha3-value">0</span></div>
+            <input type="range" id="plocha3" min="0" max="200" value="0" oninput="updateRecap(); document.getElementById('plocha3-value').innerText = this.value;">
+            
+            <div class="type-container">
+                <label style="color: #FFEB3B;"><input type="radio" name="foukani3" value="volne" checked onchange="updateRecap()"> Volné foukání</label>
+                <label style="color: #FFEB3B;"><input type="radio" name="foukani3" value="dutina" onchange="updateRecap()"> Foukání do dutiny</label>
+            </div>
+        </div>
+
+        <!-- Zadeklování půdy -->
+        <div class="slider-container">
+            <div class="slider-label">Zadeklování půdy (m²): <span id="zadeklovani-value">0</span></div>
+            <input type="range" id="zadeklovani" min="0" max="45" value="0" oninput="updateRecap(); document.getElementById('zadeklovani-value').innerText = this.value;">
+        </div>
+
+
+        <!-- Servisní lávka -->
+        <div class="walkway-container">
+            <div class="slider-label">Servisní lávka (m): <span id="lavka-value">0</span></div>
+            <input type="range" id="lavka" min="0" max="20" value="0" oninput="updateRecap(); document.getElementById('lavka-value').innerText = this.value;">
+        </div>
+
+        <!-- Montážní Požadavky -->
+        <div class="checkbox-container">
+            <label style="color: #FFEB3B;"><input type="checkbox" id="ohradka" onchange="updateRecap()"> Ohrádka prostupu (bez navýšení ceny)</label>
+        </div>
+        
+        <div class="checkbox-container">
+            <label style="color: #FFEB3B;"><input type="checkbox" id="kominek" onchange="updateRecap()"> Odvětrávací komínek Lomanco (+10 000 Kč)</label>
+            <input type="number" id="kominek-count" min="1" value="1" style="margin-left: 10px;" onchange="updateRecap()" disabled>
+        </div>
+
+        <!-- Dotace NZÚ Light -->
+        <div class="grant-container">
+            <div class="slider-label">Metry splňující NZÚ Light (m²): <span id="nzu-value">0</span></div>
+            <input type="range" id="nzu" min="0" max="200" value="0" oninput="updateRecap(); document.getElementById('nzu-value').innerText = this.value;"/>
+        </div>
+
+        <!-- Průběžná rekapitulace -->
+        <div class="recap">
+            <h3><i class="fas fa-clipboard-list"></i> Průběžná rekapitulace:</h3>
+            <table>
+                <tr>
+                    <td>Plocha 1:</td>
+                    <td><span id="recap-plocha1"></span> m²</td>
+                    <td>Typ:</td>
+                    <td><span id="recap-foukani1"></span></td>
+                </tr>
+                <tr>
+                    <td>Plocha 2:</td>
+                    <td><span id="recap-plocha2"></span> m²</td>
+                    <td>Typ:</td>
+                    <td><span id="recap-foukani2"></span></td>
+                </tr>
+                <tr>
+                    <td>Plocha 3:</td>
+                    <td><span id="recap-plocha3"></span> m²</td>
+                    <td>Typ:</td>
+                    <td><span id="recap-foukani3"></span></td>
+                </tr>
+                <tr>
+                    <td>Zadeklování půdy:</td>
+                    <td colspan="3"><span id="recap-zadeklovani"></span></td>
+                </tr>                               
+                <tr>
+                    <td style="padding-bottom: 25px;">Celková plocha:</td>
+                    <td colspan="3" style="padding-bottom: 25px;"><span id="total-area">0</span> m²</td>
+                </tr>
+                <tr>
+                    <td>Servisní lávka:</td>
+                    <td colspan="3"><span id="recap-lavka"></span> <span id="recap-lavka-cena"></span></td>
+                </tr>
+                <tr>
+                    <td>Ohrádka prostupu:</td>
+                    <td colspan="3"><span id="recap-ohradka"></span></td>
+                </tr>
+                <tr>
+                    <td style="padding-bottom: 25px;">Odvětrávací komínek Lomanco:</td>
+                    <td colspan="3" style="padding-bottom: 25px;"><span id="recap-kominek"></span></td>
+                </tr>
+                <tr>
+                    <td>Metry splňující NZÚ Light:</td>
+                    <td colspan="3"><span id="recap-nzu"></span> m²</td>
+                </tr>
+                <tr>
+                    <td style="padding-bottom: 25px;">Výše dotace NZÚ Light:</td>
+                    <td colspan="3"  style="padding-bottom: 25px;"><span id="recap-dotace"></span> Kč</td>
+                </tr>
+                <tr>
+                    <td>Celková cena:</td>
+                    <td colspan="3"><span id="total-price">0 Kč</span></td>
+                </tr>
+                <tr>
+                    <td>Cena po odečtení dotace:</td>
+                    <td colspan="3"><span id="total-after-subsidy">0 Kč</span></td>
+                </tr>                
+            </table>
+        </div>
+        <div class="customer-info">
+            <h3>Informace o zákazníkovi:</h3>
+            <label for="customer-name">Jméno zákazníka:</label>
+            <input type="text" id="customer-name" placeholder="Jméno zákazníka">
+        
+            <label for="customer-contact">Kontakt (telefon nebo email):</label>
+            <input type="text" id="customer-contact" placeholder="Kontakt na zákazníka">
+        </div>
+        <div class="agent-info">
+            <h3>Zde zatím nic neřešte:</h3>
+            <label for="agent-info">Zde zatím nic</label>
+            <select id="agent-info" onchange="updateAgentInfo()">
+                <option value="">Vyberte obchodního zástupce</option>
+                <option value="novotny"></option>
+                <option value="jurecek">Dalibro Jureček</option>
+                <option value="neuwirth">Bc. Jaroslav Neuwirth</option>
+            </select>
+        </div>
+
+        <!-- Tlačítko pro pokračování -->
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="submitForm()"><i class="fas fa-file-pdf"></i> Vytvořit nabídku</button>
+        </div>
+    </div>
+
+    <script>
+        function updateRecap() {
+            // Získání hodnot z formuláře
+            let plocha1 = parseInt(document.getElementById("plocha1").value);
+            let foukani1 = document.querySelector('input[name="foukani1"]:checked').value;
+            let plocha2 = parseInt(document.getElementById("plocha2").value);
+            let foukani2 = document.querySelector('input[name="foukani2"]:checked').value;
+            let plocha3 = parseInt(document.getElementById("plocha3").value);
+            let foukani3 = document.querySelector('input[name="foukani3"]:checked').value;
+            let lavka = parseInt(document.getElementById("lavka").value);
+            let ohradka = document.getElementById("ohradka").checked ? "Ano" : "Ne";
+            let kominekPocet = parseInt(document.getElementById("kominek-count").value);
+            let kominekCena = kominekPocet * 10000;
+            let nzu = parseInt(document.getElementById("nzu").value);
+        
+            // Získání hodnot pro zadeklování
+            let zadeklovani = parseInt(document.getElementById("zadeklovani").value);
+            let zadeklovaniCena = 0;
+        
+            // Výpočet celkové plochy
+            let celkovaPlocha = plocha1 + plocha2 + plocha3;
+            document.getElementById("total-area").innerText = `${celkovaPlocha}`;
+        
+            // Podmínky pro výpočet zadeklování
+            if (celkovaPlocha > 75) {
+                if (zadeklovani > 20) {
+                    zadeklovaniCena = (zadeklovani - 20) * 1150;
+                }
+            } else {
+                zadeklovaniCena = zadeklovani * 1150;
+            }
+        
+            console.log('Cena za zadeklování: ', zadeklovaniCena); // Zkontroluj, zda se cena počítá správně
+        
+            // Aktualizace hodnot v rekapitulaci
+            document.getElementById("plocha1-value").innerText = plocha1;
+            document.getElementById("plocha2-value").innerText = plocha2;
+            document.getElementById("plocha3-value").innerText = plocha3;
+            document.getElementById("recap-plocha1").innerText = plocha1;
+            document.getElementById("recap-foukani1").innerText = foukani1;
+            document.getElementById("recap-plocha2").innerText = plocha2;
+            document.getElementById("recap-foukani2").innerText = foukani2;
+            document.getElementById("recap-plocha3").innerText = plocha3;
+            document.getElementById("recap-foukani3").innerText = foukani3;
+            document.getElementById("recap-ohradka").innerText = ohradka;
+            document.getElementById("recap-kominek").innerText = kominekPocet > 0 ? `Ano (+${kominekCena} Kč, počet: ${kominekPocet})` : "Ne";
+            document.getElementById("recap-nzu").innerText = nzu;
+            document.getElementById("recap-zadeklovani").innerText = `${zadeklovaniCena} Kč`;
+        
+            // Výpočet ceny za lávku
+            let lavkaCena = 0;
+            if (lavka > 0) {
+                if (celkovaPlocha <= 40) {
+                    lavkaCena = lavka * 450;
+                } else if (lavka > 8) {
+                    lavkaCena = (lavka - 8) * 450;
+                }
+            }
+            document.getElementById("recap-lavka").innerText = lavka > 0 ? `${lavka} m` : "Ne";
+            document.getElementById("recap-lavka-cena").innerText = lavkaCena > 0 ? `${lavkaCena} Kč` : " bez doplatku";
+        
+            // Výpočet výše dotace NZÚ Light
+            let dotace = nzu * 1500;
+            if (dotace > 250000) {
+                dotace = 250000; // Maximální dotace je 250 000 Kč
+            }
+            document.getElementById("recap-dotace").innerText = `${dotace} Kč`;
+        
+            // Výpočet celkové ceny
+            let cena = 0;
+            cena += foukani1 === "volne" ? plocha1 * 1500 : plocha1 * 1600;
+            cena += foukani2 === "volne" ? plocha2 * 1500 : plocha2 * 1600;
+            cena += foukani3 === "volne" ? plocha3 * 1500 : plocha3 * 1600;
+            cena += lavkaCena;
+            cena += zadeklovaniCena;
+        
+            // Přidání ceny komínku Lomanco
+            if (document.getElementById("kominek").checked) {
+            cena += kominekCena;
+            let kominekText = `Ano (+${kominekCena} Kč, počet: ${kominekPocet})`;
+            document.getElementById("recap-kominek").innerText = kominekText;
+            } else {
+            let kominekText = "Ne";
+            document.getElementById("recap-kominek").innerText = kominekText;
+            }
+        
+            let cenaPoDotaci = Math.max(cena - dotace, 0);
+            document.getElementById("total-price").innerText = `${cena} Kč`;
+            document.getElementById("total-after-subsidy").innerText = `${cenaPoDotaci} Kč`;
+        }
+        </script>
+        
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        //tohle by měl být kód, který bude schopen generovat PDF
+        function submitForm() {
+    // Načtení knihovny jsPDF
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Přidání loga (vlož si sem správné base64 nebo URL loga)
+    const imgData = 'data:image/jpeg;base64,...'; // Zde vložíme base64 obrázek loga
+    doc.addImage(imgData, 'JPEG', 10, 10, 50, 20);
+
+    // Přidání nadpisu
+    doc.setFontSize(18);
+    doc.text('Nabídka na Zateplení Foukanou Vatou', 70, 30);
+
+    // Informace o zákazníkovi a obchodním zástupci
+    const customerName = document.getElementById("customer-name").value;
+    const salesRep = document.getElementById("sales-rep").value;
+    doc.setFontSize(12);
+    doc.text(`Zákazník: ${customerName}`, 10, 50);
+    doc.text(`Obchodní zástupce: ${salesRep}`, 10, 60);
+
+    // Přidání informací z kalkulátoru
+    const celkovaPlocha = document.getElementById("total-area").innerText;
+    const celkovaCena = document.getElementById("total-price").innerText;
+    const cenaPoDotaci = document.getElementById("total-after-subsidy").innerText;
+
+    doc.text(`Celková plocha: ${celkovaPlocha} m²`, 10, 80);
+    doc.text(`Celková cena: ${celkovaCena}`, 10, 90);
+    doc.text(`Cena po odečtení dotace: ${cenaPoDotaci}`, 10, 100);
+
+    // Stažení nebo otevření nabídky
+    doc.save('Nabidka_Zatepleni.pdf');
+}
+    </script>
+
+</body>
+</html>
